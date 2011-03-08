@@ -33,6 +33,8 @@ namespace QJson {
   *
   * none (default) : { "foo" : 0, "foo1" : 1, "foo2" : [ { "foo3" : 3, "foo4" : 4 } ] }
   *
+  * none compact : {"foo":0,"foo1":1,"foo2":[{"foo3":3,"foo4":4}]}
+  *
   * minimum : { "foo" : 0, "foo1" : 1, "foo2" : [
   *             { "foo3" : 3, "foo4" : 4 }
   *           ] }
@@ -57,6 +59,7 @@ namespace QJson {
   *        }
   */
   enum IndentMode {
+    IndentNoneCompact,
     IndentNone,
     IndentMinimum,
     IndentMedium,

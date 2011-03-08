@@ -85,6 +85,9 @@ QByteArray Serializer::SerializerPrivate::serialize( const QVariant &v, int rese
       QByteArray indent = buildIndent(reserved);
       str = "[\n" + join( values, ",\n" ) + "\n" + indent + "]";
     }
+    else if (indentMode == QJson::IndentNoneCompact) {
+      str = "[" + join( values, "," ) + "]";
+    }
     else {
       str = "[ " + join( values, ", " ) + " ]";
     }
@@ -92,6 +95,7 @@ QByteArray Serializer::SerializerPrivate::serialize( const QVariant &v, int rese
   } else if ( v.type() == QVariant::Map ) { // variant is a map?
     const QVariantMap vmap = v.toMap();
     QMapIterator<QString, QVariant> it( vmap );
+    QByteArray kvDelim = (indentMode == QJson::IndentNoneCompact) ? ":" : " : ";
 
     if (indentMode == QJson::IndentMinimum) {
       QByteArray indent = buildIndent(reserved);
@@ -101,6 +105,9 @@ QByteArray Serializer::SerializerPrivate::serialize( const QVariant &v, int rese
       QByteArray indent = buildIndent(reserved);
       QByteArray nextindent = buildIndent(reserved + 1);
       str = indent + "{\n" + nextindent;
+    }
+    else if (indentMode == QJson::IndentNoneCompact) {
+      str = "{";
     }
     else {
       str = "{ ";
@@ -116,12 +123,15 @@ QByteArray Serializer::SerializerPrivate::serialize( const QVariant &v, int rese
         error = true;
         break;
       }
-      pairs << sanitizeString( it.key() ).toUtf8() + " : " + serializedValue;
+      pairs << sanitizeString( it.key() ).toUtf8() + kvDelim + serializedValue;
     }
 
     if (indentMode == QJson::IndentFull) {
       QByteArray indent = buildIndent(reserved + 1);
       str += join( pairs, ",\n" + indent);
+    }
+    else if (indentMode == QJson::IndentNoneCompact) {
+      str += join( pairs, "," );
     }
     else {
       str += join( pairs, ", " );
@@ -130,6 +140,9 @@ QByteArray Serializer::SerializerPrivate::serialize( const QVariant &v, int rese
     if (indentMode == QJson::IndentMedium || indentMode == QJson::IndentFull) {
       QByteArray indent = buildIndent(reserved);
       str += "\n" + indent + "}";
+    }
+    else if (indentMode == QJson::IndentNoneCompact) {
+      str += "}";
     }
     else {
       str += " }";
